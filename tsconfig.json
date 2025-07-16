@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ES2022",
+        "lib": [ "ES2022", "DOM" ],
+        "strict": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "composite": false,
+        "declaration": true,
+        "declarationMap": true,
+        "inlineSources": false,
+        "isolatedModules": true,
+        "moduleResolution": "node",
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "preserveWatchOutput": true,
+        "strictNullChecks": true,
+        "outDir": "dist",
+        "declarationDir": "dist/types",
+        "rootDir": "./src",
+        "baseUrl": "./src",
+        "paths": {
+            "@/*": [ "*" ]
+        },
+        "typeRoots": [ "./node_modules/@types", "./src/types" ],
+        "resolveJsonModule": true
+    },
+    "include": [ "src", "scripts", "src/types/types.d.ts" ],
+    "exclude": [ "node_modules", "dist", "tests" ],
+    "ts-node": {
+        "esm": true
+    }
+}

@@ -1,0 +1,123 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# reports go here
+reports
+
+# allow the src/reports directory however
+!reports/**/*.ts
+!**/src/reports/
+!**/src/reports/**
+
+# exclude generated reports
+*.html
+
+# allow the html templates
+!templates/**/*.html
+!**/templates/
+
+# local
+.vs
+.yarn
+
+# local rpk binary
+bin/rpk*
+
+# temp folder for downloads
+temp/*
+
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# misc
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.pem
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs
+*.log
+
+# Keep TypeScript files in logs directories and src
+# folders that may have a logs directory
+!logs/**/*.ts
+!**/src/logs/
+!**/src/logs/**
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Turbo
+.turbo/
+
+# Editor directories and files
+# .vscode/settings.json is setup for prettier and eslint
+# .vscode/
+.idea/
+*.swp
+*.swo
+*~
+code-workspace
+.vs
+
+# CI build artifacts
+cibuild
+
+# Production builds
+dist/
+build/
+out/
+
+# ESBuild builds
+public/*.js
+public/*.map
+
+# TypeScript
+*.tsbuildinfo
+*.d.ts.map
+
+# Testing
+.nyc_output/
+
+# Coverage outputs
+**/coverage/lcov.info
+**/coverage/*.json
+**/coverage/*.xml
+**/coverage/clover.xml
+**/coverage/coverage-final.json
+coverage-report.html
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Cache directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+
+# Changesets
+.changeset/pre.json
+
+# Husky
+.husky/_
+
+# Keep
+!.gitkeep

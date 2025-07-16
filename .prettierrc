@@ -1,0 +1,13 @@
+{
+    "trailingComma": "none",
+    "singleQuote": false,
+    "tabWidth": 4,
+    "overrides": [
+        {
+            "files": "*.ts",
+            "options": {
+                "singleQuote": false
+            }
+        }
+    ]
+}

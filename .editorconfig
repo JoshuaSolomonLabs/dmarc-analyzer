@@ -1,0 +1,55 @@
+# EditorConfig  http://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# All files
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+indent_style = space
+indent_size = 4
+
+# TypeScript/JavaScript
+[*.{ts,js,mts,cts,mjs,cjs}]
+indent_size = 4
+max_line_length = 120
+
+# JSON files
+[*.json]
+indent_size = 4
+
+# YAML files
+[*.{yml,yaml}]
+indent_size = 4
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Shell scripts
+[*.{sh,bash}]
+indent_size = 4
+
+# Batch files (Windows) - these should use CRLF
+[*.{bat,cmd}]
+end_of_line = lf
+
+# Configuration files
+[{package.json,*.config.js,*.config.ts}]
+indent_size = 4
+
+# Docker files
+[{Dockerfile,*.dockerfile}]
+indent_size = 4
+
+# SQL files
+[*.sql]
+indent_size = 4
+
+# XML files
+[*.xml]
+indent_size = 4

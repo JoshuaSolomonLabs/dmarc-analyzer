@@ -1,0 +1,55 @@
+{
+    "name": "dmarc-analyzer",
+    "version": "1.0.0",
+    "description": "DMARC report analyzer and HTML generator",
+    "author": "Joshua Richardson <joshua@solomonlabs.org>",
+    "homepage": "https://github.com/JoshuaSolomonLabs/dmarc-analyzer#readme",
+    "contributors": [
+        {
+            "name": "Joshua Richardson",
+            "url": "https://github.com/JoshuaSolomonLabs",
+            "author": true
+        }
+    ],
+    "bugs": {
+        "url": "https://github.com/JoshuaSolomonLabs/dmarc-analyzer/issues",
+        "email": "joshua@solomonlabs.org"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/JoshuaSolomonLabs/dmarc-analyzer.git"
+    },
+    "license": "MIT",
+    "type": "module",
+    "main": "src/main.ts",
+    "scripts": {
+        "dev": "tsx src/main.ts",
+        "build": "tsc",
+        "test": "node --test --experimental-test-coverage test/**/*.test.ts",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "dotenv": "16.5.0",
+        "jszip": "^3.10.1",
+        "xml2js": "^0.6.2"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "@types/xml2js": "^0.4.14",
+        "@typescript-eslint/eslint-plugin": "^7.8.0",
+        "@typescript-eslint/parser": "^7.8.0",
+        "eslint": "^8.57.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-import-resolver-typescript": "^3.6.1",
+        "eslint-plugin-import": "^2.29.1",
+        "eslint-plugin-prettier": "^5.1.3",
+        "prettier": "^3.2.5",
+        "prettier-plugin-organize-imports": "^3.2.4",
+        "tsx": "4.20.3",
+        "typescript": "^5.3.0"
+    },
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+}
