@@ -26,14 +26,4 @@ async function main(): Promise<void> {
     exitTimeout.unref();
 }
 
-// Handle both ESM and CommonJS execution
-if (
-    typeof import.meta?.url === "string" &&
-    (import.meta.main === true || import.meta.url === pathToFileURL(process.argv[1]).href)
-) {
-    main();
-} else if (typeof __dirname !== "undefined") {
-    if (require.main === module) {
-        main();
-    }
-}
+main();
