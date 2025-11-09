@@ -92,31 +92,44 @@ export class DmarcReportLoaderParser {
 
     static async processDirectory(reportsDirectory: string, sortByTimestamp = true): Promise<DmarcRecord[]> {
         const files = await readdir(reportsDirectory);
-        const zipFiles = files.filter((file) => extname(file) === ".zip");
 
-        logger.info(`Found ${zipFiles.length} ZIP files to process`, "DmarcAnalyzer");
+        const archiveFileInfos: ZipFileInfo[] = [];
+        for (let i = 0, len = files.length; i < len; i++) {
+            const filename = files[i];
+            const extension = extname(filename);
+            // Process both ZIP archives and standalone GZIP (.xml.gz / .gz) files
+            if (extension === ".zip" || extension === ".gz") {
+                archiveFileInfos.push(this.parseZipFilename(reportsDirectory, filename));
+            }
+        }
 
-        const zipFileInfos = zipFiles.map((file) => this.parseZipFilename(reportsDirectory, file));
+        logger.info(`Found ${archiveFileInfos.length} DMARC report files to process`, "DmarcAnalyzer");
 
         if (sortByTimestamp) {
-            zipFileInfos.sort((a, b) => a.timestamp - b.timestamp);
+            archiveFileInfos.sort((a, b) => a.timestamp - b.timestamp);
         }
 
         const records: DmarcRecord[] = [];
 
-        for (const zipInfo of zipFileInfos) {
+        for (let i = 0, len = archiveFileInfos.length; i < len; i++) {
+            const archiveInfo = archiveFileInfos[i];
             const dateStr =
-                zipInfo.timestamp > 0
-                    ? DateUtil.dateLikeToDateUtc(zipInfo.timestamp * 1000)
+                archiveInfo.timestamp > 0
+                    ? DateUtil.dateLikeToDateUtc(archiveInfo.timestamp * 1000)
                           .toISOString()
                           .split("T")[0]
                     : "unknown";
-            logger.info(`Processing ${zipInfo.filename} (${zipInfo.provider}, ${dateStr})`, "DmarcAnalyzer");
+
+            logger.info(`Processing ${archiveInfo.filename} (${archiveInfo.provider}, ${dateStr})`, "DmarcAnalyzer");
 
             try {
-                records.push(...(await this.processZipFile(zipInfo.path)));
+                if (archiveInfo.filename.endsWith(".zip")) {
+                    records.push(...(await this.processZipFile(archiveInfo.path)));
+                } else if (archiveInfo.filename.endsWith(".gz")) {
+                    records.push(...(await this.processGzipFile(archiveInfo.path)));
+                }
             } catch (err) {
-                logger.error(`Failed to process ${zipInfo.filename}`, "DmarcAnalyzer", err);
+                logger.error(`Failed to process ${archiveInfo.filename}`, "DmarcAnalyzer", err);
             }
         }
 
@@ -131,7 +144,9 @@ export class DmarcReportLoaderParser {
         const records: DmarcRecord[] = [];
 
         for (const [filename, file] of Object.entries(zip.files)) {
-            if (file.dir) continue;
+            if (file.dir) {
+                continue;
+            }
 
             let xmlContent: string;
             if (filename.endsWith(".gz")) {
@@ -151,6 +166,19 @@ export class DmarcReportLoaderParser {
         }
 
         return records;
+    }
+
+    private static async processGzipFile(filePath: string): Promise<DmarcRecord[]> {
+        const gzipFilename = basename(filePath);
+        const gzipData = await readFile(filePath);
+        const xmlContent = await this.decompressGzip(gzipData);
+        const baseFilename = basename(gzipFilename);
+
+        const record = await this.parseXmlReport(xmlContent, gzipFilename, baseFilename);
+
+        logger.info(`Parsed report ${record.reportId} from ${record.orgName}`, "DmarcAnalyzer");
+
+        return [record];
     }
 
     private static async decompressGzip(buffer: Buffer): Promise<string> {

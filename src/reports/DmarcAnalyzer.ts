@@ -32,53 +32,59 @@ export class DmarcAnalyzer {
     private static generateTrendData(records: DmarcRecord[]): TrendData[] {
         const dailyData = new Map<string, { passed: number; failed: number; total: number }>();
 
-        for (const record of records) {
-            for (let timestamp = record.dateRange.begin; timestamp <= record.dateRange.end; timestamp += 86400) {
-                const dateKey = DateUtil.dateLikeToDateUtc(timestamp * 1000)
-                    .toISOString()
-                    .split("T")[0];
+        for (let i = 0, len = records.length; i < len; i++) {
+            const record = records[i];
 
-                if (!dailyData.has(dateKey)) {
-                    dailyData.set(dateKey, { passed: 0, failed: 0, total: 0 });
-                }
+            // Use the report's start date as the bucket key (UTC YYYY-MM-DD)
+            const dateKey = DateUtil.dateLikeToDateUtc(record.dateRange.begin * 1000)
+                .toISOString()
+                .split("T")[0];
 
-                const dayData = dailyData.get(dateKey)!;
+            let dayData = dailyData.get(dateKey);
+            if (!dayData) {
+                dayData = { passed: 0, failed: 0, total: 0 };
+                dailyData.set(dateKey, dayData);
+            }
 
-                for (const recordRow of record.records) {
-                    const count = Math.floor(
-                        recordRow.count / ((record.dateRange.end - record.dateRange.begin) / 86400 + 1)
-                    );
+            const rows = record.records;
+            for (let j = 0, rowsLen = rows.length; j < rowsLen; j++) {
+                const recordRow = rows[j];
+                const count = recordRow.count;
 
-                    const dkimPass = recordRow.dkim === "pass";
-                    const spfPass = recordRow.spf === "pass";
-                    const arcPass = recordRow.reason === "local_policy" && recordRow.comment?.includes("arc=pass");
-                    const passed = dkimPass || spfPass || arcPass;
+                const dkimPass = recordRow.dkim === "pass";
+                const spfPass = recordRow.spf === "pass";
+                const arcPass = recordRow.reason === "local_policy" && recordRow.comment?.includes("arc=pass");
+                const passed = dkimPass || spfPass || arcPass;
 
-                    dayData.total += count;
-                    if (passed) {
-                        dayData.passed += count;
-                    } else {
-                        dayData.failed += count;
-                    }
+                dayData.total += count;
+                if (passed) {
+                    dayData.passed += count;
+                } else {
+                    dayData.failed += count;
                 }
             }
         }
 
-        return Array.from(dailyData.entries())
-            .map(([date, data]) => ({
+        const trends: TrendData[] = [];
+
+        for (const [date, data] of dailyData.entries()) {
+            const passRate =
+                data.total > 0
+                    ? new BigDecimal(data.passed.toString()).divide(data.total.toString()).multiply("100").toNumber()
+                    : 0;
+
+            trends.push({
                 date,
                 passed: data.passed,
                 failed: data.failed,
                 total: data.total,
-                passRate:
-                    data.total > 0
-                        ? new BigDecimal(data.passed.toString())
-                              .divide(data.total.toString())
-                              .multiply("100")
-                              .toNumber()
-                        : 0
-            }))
-            .sort((a, b) => a.date.localeCompare(b.date));
+                passRate
+            });
+        }
+
+        trends.sort((a, b) => a.date.localeCompare(b.date));
+
+        return trends;
     }
 
     static async analyze(records: DmarcRecord[], enableDnsLookups: boolean): Promise<AnalysisResult> {

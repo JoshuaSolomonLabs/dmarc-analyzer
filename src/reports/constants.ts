@@ -28,7 +28,20 @@ export const PRIVATE_IP_RANGES = [
 ];
 
 export const ZIP_FILENAME_PATTERNS = {
+    // google.com!solomonlabs.org!1762560000!1762646400.zip
     google: /google\.com!.*!(\d{10})!\d{10}/,
+
+    // yahoo.com-foo-1762560000-1762646400.zip
     yahoo: /yahoo\.com-.*-(\d{10})-\d{10}/,
-    microsoft: /(microsoft\.com|outlook\.com)_.*_(\d{10})_\d{10}/
+
+    // Microsoft DMARC reports:
+    // - microsoft.com_example.com_1762560000_1762646400.zip
+    // - outlook.com_example.com_1762560000_1762646400.zip
+    // - enterprise.protection.outlook.com!example.com!1762560000!1762646400(.xml.gz)?.zip
+    microsoft: /(?:microsoft\.com|outlook\.com|enterprise\.protection\.outlook\.com)[!_].*?(\d{10})[!_]\d{10}/,
+
+    // Amazon SES DMARC reports:
+    // amazonses.com!example.com!1762560000!1762646400(.xml.gz)?.zip
+    // or straight amazonses.com!example.com!1762560000!1762646400.xml.gz
+    amazonSes: /amazonses\.com[!_].*?(\d{10})[!_]\d{10}/
 };
